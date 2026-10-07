@@ -1,0 +1,196 @@
+<title>Rebuild the Trilho Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: single column letter-page. Two parallel rail lines (trilho = tram track) run between sections. */
+:root {
+  --bg: #f6f9f9;
+  --surface: #ffffff;
+  --ink: #16243f;
+  --muted: #55627a;
+  --line: #d3dde0;
+  --navy: #203864;
+  --teal: #00859b;
+  --orange: #d96a00;
+  --lime: #8fb82e;
+  --on-accent: #ffffff;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a2b; --surface: #17263d; --ink: #e8eef6; --muted: #a2b0c4; --line: #2a3b57;
+    --navy: #9fb8e6; --teal: #35c0d6; --orange: #ff9a3c; --lime: #b5de5a; --on-accent: #0f1a2b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1a2b; --surface: #17263d; --ink: #e8eef6; --muted: #a2b0c4; --line: #2a3b57;
+  --navy: #9fb8e6; --teal: #35c0d6; --orange: #ff9a3c; --lime: #b5de5a; --on-accent: #0f1a2b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.65; padding-inline: 20px; padding-block: 0 56px; }
+.wrap { max-width: 720px; margin-inline: auto; }
+h1, h2 { font-family: var(--font-display); color: var(--navy); text-wrap: balance; line-height: 1.08; margin: 0; }
+h1 { font-size: clamp(2.3rem, 7vw, 3.6rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 4vw, 1.9rem); font-weight: 700; letter-spacing: -0.01em; }
+p { margin: 0; max-width: 65ch; }
+.label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+a { color: var(--teal); }
+:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; border-radius: 4px; }
+
+header.top { padding-block: 22px; display: flex; align-items: center; gap: 12px; }
+.dots { display: flex; gap: 5px; }
+.dots i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+.dots i:nth-child(1) { background: var(--orange); }
+.dots i:nth-child(2) { background: var(--teal); }
+.dots i:nth-child(3) { background: var(--lime); }
+.brand { font-family: var(--font-display); font-weight: 700; color: var(--navy); font-size: 1.05rem; }
+
+.hero { padding-block: 36px 40px; display: flex; flex-direction: column; gap: 22px; }
+.hero .lede { font-size: 1.2rem; color: var(--muted); }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { font: 600 1rem var(--font-body); border-radius: 10px; padding: 14px 24px; border: 2px solid var(--navy); cursor: pointer; text-decoration: none; display: inline-block; text-align: center; }
+.btn.primary { background: var(--orange); border-color: var(--orange); color: var(--on-accent); }
+.btn.primary[aria-disabled="true"] { background: transparent; color: var(--muted); border-color: var(--line); cursor: default; }
+.btn.ghost { background: transparent; color: var(--navy); }
+.btn:not([aria-disabled="true"]):hover { filter: brightness(1.07); }
+
+.rail { height: 14px; margin-block: 8px; background:
+  repeating-linear-gradient(90deg, var(--line) 0 3px, transparent 3px 22px) center 6px / 100% 14px no-repeat; position: relative; }
+.rail::before, .rail::after { content: ""; position: absolute; left: 0; right: 0; height: 3px; background: var(--navy); opacity: .85; border-radius: 2px; }
+.rail::before { top: 1px; } .rail::after { bottom: 1px; }
+
+section { padding-block: 40px; display: flex; flex-direction: column; gap: 18px; }
+.story p + p { margin-top: 0; }
+.story { gap: 16px; }
+.sign { font-family: var(--font-display); font-weight: 700; color: var(--navy); }
+blockquote { margin: 0; padding: 0; font-family: var(--font-display); font-size: 1.35rem; line-height: 1.3; color: var(--navy); font-weight: 600; text-wrap: balance; }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.fact { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.fact b { font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: var(--orange); line-height: 1; font-variant-numeric: tabular-nums; }
+.fact span { color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
+
+.ways { display: grid; gap: 14px; }
+.way { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.way h3 { margin: 0; font-family: var(--font-display); font-size: 1.25rem; color: var(--navy); }
+.note { font-size: 0.9rem; color: var(--muted); }
+.share-text { width: 100%; min-height: 150px; resize: vertical; font: 400 0.95rem/1.55 var(--font-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.status { min-height: 1.4em; font-size: 0.9rem; color: var(--teal); font-weight: 600; }
+footer { padding-block: 28px 0; color: var(--muted); font-size: 0.9rem; display: flex; flex-direction: column; gap: 6px; }
+@media (prefers-reduced-motion: no-preference) { .btn { transition: filter .15s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="brand">Instituto Trilho</span>
+  </header>
+
+  <div class="hero">
+    <span class="label">Santa Teresa, Rio de Janeiro</span>
+    <h1>Help rebuild the playground at Instituto Trilho.</h1>
+    <p class="lede">The school gives children from Santa Teresa's hillside communities a free education and a safe place to be. Its playground is outdated and no longer safe to use.</p>
+    <div class="cta-row">
+      <a class="btn primary" id="give-top" href="#give">Donate</a>
+      <button class="btn ghost" id="share-top" type="button">Copy link to share</button>
+    </div>
+    <div class="status" id="status-top" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="rail" aria-hidden="true"></div>
+
+  <section class="story" aria-labelledby="story-h">
+    <span class="label">A letter from Karim, Eva and Maria Antonia</span>
+    <h2 id="story-h">A school built so kids have somewhere to learn, at no cost.</h2>
+    <p>Dear all,</p>
+    <p>We'd like to take a moment to talk about something that's really important to our families and to us. As some of you may know, our grandfather established many schools in Rio de Janeiro. Created in 1997 and formerly known as "Instituto Marquês de Salamanca", Instituto Trilho is named after the tram that goes around the hill of Santa Teresa, where our grandfather lived his entire life and built his first school.</p>
+    <p>The hill is also home to many communities, most notably Morro dos Prazeres and Favela Julio Otoni. These communities are beautiful, but they are extremely dangerous because of ongoing conflicts between gangs and police. Residents, especially children, are frequently exposed to danger and instability. Santa Teresa is home to many young people, but those same young people do not always have access to quality educational programs.</p>
+    <blockquote>Our grandfather started the school to give his community a place for kids to learn at no cost.</blockquote>
+    <p>The school helps with the academic needs of its students, and it is also a safe haven from the dangers of the favelas. Right now it is struggling to raise the money to build a new playground. The current one is outdated and no longer safe, and rebuilding it will give the children a secure place to play without the risk of injury.</p>
+    <p>That's why we're writing today: to ask if you would be willing to make a small donation. Any little bit counts when it comes to supporting our future generations and giving them opportunities to further their education.</p>
+    <p>If you're unable to donate, please don't worry. Simply sharing this message will also greatly benefit the school.</p>
+    <p>Thank you,<br><span class="sign">Karim, Eva and Maria Antonia</span></p>
+  </section>
+
+  <div class="rail" aria-hidden="true"></div>
+
+  <section aria-labelledby="facts-h">
+    <span class="label">The school today</span>
+    <h2 id="facts-h">Who the playground is for</h2>
+    <div class="facts">
+      <div class="fact"><b>100</b><span>children, ages 2 to 6, in full-time care</span></div>
+      <div class="fact"><b>82,400</b><span>meals served to preschool students in 2025</span></div>
+      <div class="fact"><b>2,000+</b><span>children served over the school's history</span></div>
+      <div class="fact"><b>1997</b><span>year the institute was founded</span></div>
+    </div>
+  </section>
+
+  <div class="rail" aria-hidden="true"></div>
+
+  <section id="give" aria-labelledby="help-h">
+    <span class="label">Two ways to help</span>
+    <h2 id="help-h">Give, or pass it on</h2>
+    <div class="ways">
+      <div class="way">
+        <h3>Make a donation</h3>
+        <p>Every amount goes toward the new playground.</p>
+        <a class="btn primary" id="donate-btn" href="#give" aria-disabled="true">Donation link coming soon</a>
+        <p class="note" id="donate-note">The donation link is being set up. Check back shortly, or share this page so more people see it when it opens.</p>
+      </div>
+      <div class="way">
+        <h3>Share the message</h3>
+        <p>Send this to friends and family by text, email or social media.</p>
+        <label for="share-text" class="note">Message (you can edit it before sending)</label>
+        <textarea class="share-text" id="share-text" readonly></textarea>
+        <div class="cta-row">
+          <button class="btn ghost" id="copy-msg" type="button">Copy message</button>
+          <button class="btn ghost" id="copy-link" type="button">Copy link</button>
+        </div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Instituto Trilho · Rua Almirante Alexandrino, 1662, Santa Teresa, Rio de Janeiro</span>
+    <a href="https://www.institutotrilho.org.br" target="_blank" rel="noopener">institutotrilho.org.br</a>
+  </footer>
+</div>
+
+<script>
+(function () {
+  // Set this to a real payment page (PayPal.me, GoFundMe, the institute's own donation page) to turn the button on.
+  var DONATE_URL = "";
+
+  var msg = "Hi all, my cousins Eva and Maria Antonia and I are raising money for Instituto Trilho, the free school our grandfather founded on the hill of Santa Teresa in Rio de Janeiro. Its playground is outdated and no longer safe for the children. Any small donation helps, and sharing this message helps too. Thank you!";
+  var ta = document.getElementById("share-text");
+  var link = function () { try { return location.href.split("#")[0]; } catch (e) { return ""; } };
+  ta.value = msg + "\n\n" + link();
+
+  var btn = document.getElementById("donate-btn");
+  if (DONATE_URL) {
+    btn.href = DONATE_URL; btn.target = "_blank"; btn.rel = "noopener";
+    btn.removeAttribute("aria-disabled"); btn.textContent = "Donate to the playground";
+    document.getElementById("donate-note").textContent = "You will be taken to a secure payment page.";
+    var top = document.getElementById("give-top"); top.href = DONATE_URL; top.target = "_blank"; top.rel = "noopener";
+  }
+
+  function copy(text, els, okText) {
+    function done(ok) {
+      els.forEach(function (id) { var s = document.getElementById(id); if (s) s.textContent = ok ? okText : "Press Ctrl+C or Cmd+C to copy."; });
+      setTimeout(function () { els.forEach(function (id) { var s = document.getElementById(id); if (s) s.textContent = ""; }); }, 3000);
+    }
+    var p;
+    try { p = navigator.clipboard.writeText(text); } catch (e) { p = null; }
+    if (p && p.then) { p.then(function () { done(true); }, function () { ta.focus(); ta.select(); done(false); }); }
+    else { ta.focus(); ta.select(); done(false); }
+  }
+  document.getElementById("copy-msg").addEventListener("click", function () { copy(ta.value, ["status"], "Message copied."); });
+  document.getElementById("copy-link").addEventListener("click", function () { copy(link(), ["status"], "Link copied."); });
+  document.getElementById("share-top").addEventListener("click", function () { copy(link(), ["status-top"], "Link copied."); });
+})();
+</script>
